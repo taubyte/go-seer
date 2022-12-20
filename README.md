@@ -11,11 +11,11 @@ Seer is a powerfull tool to parse and edit Yaml files in a folder as if they rep
 Note: Under the hood we use *gopkg.in/yaml.v3* so YAML 1.1 & 1.2 are supported.
 
 # Installation
-The import path for the package is *gothub.com/taubyte/go-seer*.
+The import path for the package is *github.com/taubyte/go-seer*.
 
 To install it, run:
 ```bash
-go get gothub.com/taubyte/go-seer
+go get github.com/taubyte/go-seer
 ```
 
 # Usage
@@ -24,7 +24,7 @@ First start by creating an instance of seer
 s := New(SystemFS("config/"))
 ```
 
-Note tha you can also use a virtual file system
+Note that you can also use a virtual file system
 ```go
 import "github.com/spf13/afero"
 
