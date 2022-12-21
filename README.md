@@ -1,6 +1,6 @@
 # taubyte/go-seer
 
-Seer is a powerfull tool to parse and edit Yaml files in a folder as if they represent one structure.
+Go-seer is a tool to parse and edit YAML files in a directory as one structure.
 
 ## Features
  - Preserves comments and formatting of original document
@@ -19,12 +19,12 @@ go get github.com/taubyte/go-seer
 ```
 
 # Usage
-First start by creating an instance of seer
+First start by creating an instance of go-seer
 ```go
 s := New(SystemFS("config/"))
 ```
 
-Note that you can also use a virtual file system
+Note that you can also use a virtual file system.
 ```go
 import "github.com/spf13/afero"
 
