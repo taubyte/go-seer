@@ -1,7 +1,9 @@
 package seer
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -76,11 +78,12 @@ func (s *Seer) loadYamlDocument(path string) (*yaml.Node, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Opening yaml file %s failed with %s", path, err.Error())
 	}
+	defer f.Close()
 
 	root_node := &yaml.Node{}
 	yaml_decoder := yaml.NewDecoder(f)
 	err = yaml_decoder.Decode(root_node)
-	if err != nil {
+	if err != nil && !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("Processing yaml file %s failed with %s", path, err.Error())
 	}
 
