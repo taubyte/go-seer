@@ -86,3 +86,4 @@ Find us on our [Discord](https://discord.gg/eKfazxFDf9)
 # Maintainers
  - Samy Fodil @samyfodil
  - Aron Jalbuena @arontaubyte
+ - Sam Stoltenberg @skelouse
