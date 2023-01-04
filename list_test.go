@@ -135,22 +135,23 @@ func TestList(t *testing.T) {
 	})
 
 	t.Run("listing on a document", func(t *testing.T) {
+		documentName := "some-doc"
 		listItem1 := "pears"
 		listItem2 := "bananas"
 
-		err = seer.Get("some-doc").Document().Get(listItem1).Set(10).Commit()
+		err = seer.Get(documentName).Document().Get(listItem1).Set(10).Commit()
 		if err != nil {
 			t.Error(err)
 			return
 		}
 
-		err = seer.Get("some-doc").Document().Get(listItem2).Set(20).Commit()
+		err = seer.Get(documentName).Document().Get(listItem2).Set(20).Commit()
 		if err != nil {
 			t.Error(err)
 			return
 		}
 
-		val, err := seer.Get("some-doc").List()
+		val, err := seer.Get(documentName).List()
 		if err != nil {
 			t.Error(err)
 			return
