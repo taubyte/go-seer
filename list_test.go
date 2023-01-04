@@ -132,12 +132,17 @@ func TestList(t *testing.T) {
 		}
 	})
 
-	//Should fail
-	err = seer.Get("some-doc").Document().Get("Oranges").Set(20).Commit()
-	_, err = seer.Get("some-doc").List()
-	if err == nil {
-		t.Error("Listing a document should fail!")
-		return
-	}
+	t.Run("listing on a document", func(t *testing.T) {
+		err = seer.Get("some-doc").Document().Get("Oranges").Set(20).Commit()
+		val, err := seer.Get("some-doc").List()
+		if err != nil {
+			t.Error(err)
+			return
+		}
 
+		if val[0] != "Oranges" {
+			t.Error("Expected Oranges")
+			return
+		}
+	})
 }
