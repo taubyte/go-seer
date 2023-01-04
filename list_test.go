@@ -2,6 +2,8 @@ package seer
 
 import (
 	"testing"
+
+	slices "github.com/taubyte/utils/slices/string"
 )
 
 func TestList(t *testing.T) {
@@ -133,15 +135,33 @@ func TestList(t *testing.T) {
 	})
 
 	t.Run("listing on a document", func(t *testing.T) {
-		err = seer.Get("some-doc").Document().Get("Oranges").Set(20).Commit()
+		listItem1 := "pears"
+		listItem2 := "bananas"
+
+		err = seer.Get("some-doc").Document().Get(listItem1).Set(10).Commit()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		err = seer.Get("some-doc").Document().Get(listItem2).Set(20).Commit()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
 		val, err := seer.Get("some-doc").List()
 		if err != nil {
 			t.Error(err)
 			return
 		}
 
-		if val[0] != "Oranges" {
-			t.Error("Expected Oranges")
+		if slices.Contains(val, listItem1) == false {
+			t.Errorf("%s not found in `%v`", listItem1, val)
+			return
+		}
+		if slices.Contains(val, listItem2) == false {
+			t.Errorf("%s not found in `%v`", listItem2, val)
 			return
 		}
 	})
