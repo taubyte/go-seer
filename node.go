@@ -7,7 +7,9 @@ import (
 	"strings"
 
 	"github.com/spf13/afero"
+	"github.com/taubyte/utils/maps"
 	pathUtils "github.com/taubyte/utils/path"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -205,40 +207,64 @@ func (n *Query) Value(dst interface{}) error {
 		_path := "/" + pathUtils.Join(path)
 		if st, exist := n.seer.fs.Stat(_path); exist == nil && st.IsDir() == true {
 			// it's a folder
-			_dst, ok := dst.(*[]string)
-			if ok == false {
-				return fmt.Errorf("Value of a folder can only be mapped to `[]string` not `%T`", dst)
-			}
-			if *_dst == nil {
-				*_dst = make([]string, 0)
-			}
 			dirFiles, err := afero.ReadDir(n.seer.fs, _path)
 			if err != nil {
-				return fmt.Errorf("Parsinf folder %s failed with %w", path, err)
+				return fmt.Errorf("parsing folder `%s` failed with %w", path, err)
 			}
-			for _, f := range dirFiles {
+
+			_dst := make([]string, len(dirFiles))
+			for idx, f := range dirFiles {
 				if f.IsDir() == true {
-					*_dst = append(*_dst, f.Name())
+					_dst[idx] = f.Name()
 				} else {
 					fname := f.Name()
 					item := strings.TrimSuffix(fname, ".yaml")
 					if item+".yaml" == fname {
-						*_dst = append(*_dst, item)
+						_dst[idx] = item
 					}
 				}
 			}
+
+			switch dst.(type) {
+			case *interface{}:
+				*dst.(*interface{}) = _dst
+			case *[]string:
+				*dst.(*[]string) = _dst
+			default:
+				return fmt.Errorf("value of a folder can only be mapped to `*[]string` or *interface{} not `%T`", dst)
+			}
+
 			return nil
 		} else {
-			return fmt.Errorf("No data found for %s", path)
+			return fmt.Errorf("no data found for %s", path)
 		}
 	}
 
-	return doc.this.Decode(dst)
+	err = doc.this.Decode(dst)
+	if err != nil {
+		return fmt.Errorf("decode(%T) failed with %s", dst, err)
+	}
+
+	return nil
 }
 
-func (n *Query) List() (list []string, err error) {
-	err = n.Value(&list)
-	return
+func (n *Query) List() ([]string, error) {
+	var val interface{}
+	err := n.Value(&val)
+	if err != nil {
+		return nil, fmt.Errorf("listing keys failed with %s", err)
+	}
+
+	switch val.(type) {
+	case []string:
+		return val.([]string), nil
+	case map[string]interface{}:
+		return maps.Keys(val.(map[string]interface{})), nil
+	case map[interface{}]interface{}:
+		return maps.Keys(maps.SafeInterfaceToStringKeys(val.(map[interface{}]interface{}))), nil
+	default:
+		return nil, fmt.Errorf("listing keys failed with %T is not a map or a slice", val)
+	}
 }
 
 func (n *Query) dump() {
