@@ -212,15 +212,15 @@ func (n *Query) Value(dst interface{}) error {
 				return fmt.Errorf("parsing folder `%s` failed with %w", path, err)
 			}
 
-			_dst := make([]string, len(dirFiles))
-			for idx, f := range dirFiles {
+			_dst := make([]string, 0)
+			for _, f := range dirFiles {
 				if f.IsDir() == true {
-					_dst[idx] = f.Name()
+					_dst = append(_dst, f.Name())
 				} else {
 					fname := f.Name()
 					item := strings.TrimSuffix(fname, ".yaml")
 					if item+".yaml" == fname {
-						_dst[idx] = item
+						_dst = append(_dst, item)
 					}
 				}
 			}
