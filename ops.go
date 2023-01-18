@@ -61,7 +61,7 @@ func _opDeleteInFileSystem(this op, query *Query, _path []string, value *yamlNod
 
 	if st.IsDir() {
 		// it's a dir => nothing to be done
-		for k, _ := range query.seer.documents {
+		for k := range query.seer.documents {
 			if strings.HasPrefix(k, path) {
 				delete(query.seer.documents, k)
 			}
@@ -278,7 +278,6 @@ func opCreateDocument(this op, query *Query, _path []string, value *yamlNode) ([
 				return _path, nil, fmt.Errorf("Creating yaml file %s failed with %s", path, err.Error())
 			}
 			defer f.Close()
-			f.WriteString("----\n") // we need to write something so yaml package does not fail
 		} else {
 			return _path, nil, fmt.Errorf("Document: `%s` does not exist", path)
 		}

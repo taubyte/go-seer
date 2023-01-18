@@ -35,7 +35,7 @@ func TestGet(t *testing.T) {
 				var val string
 				err = seer.Get("parents").Get("sibling").Get("test").Document().Set("inside").Commit()
 				if err != nil {
-					t.Error("Failed commiting inside document. ", err)
+					t.Error("Failed committing inside document. ", err)
 				}
 
 				err = seer.Get("parents").Get("sibling").Get("test").Value(&val)

@@ -1,5 +1,8 @@
 # taubyte/go-seer
 
+[![GoDoc](https://godoc.org/github.com/taubyte/go-seer?status.svg)](https://pkg.go.dev/github.com/taubyte/go-seer)
+[![Go Report Card](https://goreportcard.com/badge/taubyte/go-seer)](https://goreportcard.com/report/taubyte/go-seer)
+
 Go-seer is a tool to parse and edit YAML files in a directory as one structure.
 
 ## Features
@@ -10,7 +13,7 @@ Go-seer is a tool to parse and edit YAML files in a directory as one structure.
 
 Note: Under the hood we use *gopkg.in/yaml.v3* so YAML 1.1 & 1.2 are supported.
 
-# Installation
+## Installation
 The import path for the package is *github.com/taubyte/go-seer*.
 
 To install it, run:
@@ -18,7 +21,7 @@ To install it, run:
 go get github.com/taubyte/go-seer
 ```
 
-# Usage
+## Usage
 First start by creating an instance of go-seer
 ```go
 s := New(SystemFS("config/"))
@@ -35,7 +38,6 @@ s := New(VirtualFS(vfs,"config/"))
 
 Now, let's build a query that will create a YAML file representing a leaf object:
 ```go
-
 type EV struct {
     Battery int
     Range int
@@ -70,20 +72,17 @@ Will print
 Battery of 100Kwh
 ```
 
-# API documentation
-
-[https://pkg.go.dev/github.com/taubyte/go-seer](https://pkg.go.dev/github.com/taubyte/go-seer)
-
-# License
+## License
 The yaml package is licensed under the GPL v3 licenses.
-Please see the LICENSE file for details.
+
+See [LICENSE](LICENSE) for the full license text.
 
 
-# Help
+## Help
 Find us on our [Discord](https://discord.gg/eKfazxFDf9)
 
 
-# Maintainers
+## Maintainers
  - Samy Fodil @samyfodil
  - Aron Jalbuena @arontaubyte
  - Sam Stoltenberg @skelouse
