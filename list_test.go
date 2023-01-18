@@ -3,167 +3,133 @@ package seer
 import (
 	"testing"
 
-	slices "github.com/taubyte/utils/slices/string"
+	"golang.org/x/exp/slices"
+	"gotest.tools/v3/assert"
 )
 
-func TestList(t *testing.T) {
+func TestListEmpty(t *testing.T) {
 	seer, err := New(fixtureFS(true, "/"))
-	if err != nil {
-		t.Error(err)
-		return
+	assert.NilError(t, err)
+
+	items, err := seer.List()
+	assert.NilError(t, err)
+	assert.Assert(t, len(items) == 0)
+
+	for _, query := range []*Query{
+		seer.Get("parent"),
+		seer.Get("parent").Get("p").Document(),
+		seer.Get("a").Get("b").Get("C").Document().Get("a").Get("orange"),
+	} {
+		err = query.Fork().Commit()
+		assert.NilError(t, err)
+
+		items, err = query.Fork().List()
+		assert.NilError(t, err)
+		assert.Assert(t, len(items) == 0)
+	}
+}
+
+func TestListSet(t *testing.T) {
+	seer, err := New(fixtureFS(true, "/"))
+	assert.NilError(t, err)
+
+	seer.Get("parent").Get("p").Commit()
+	listItems, err := seer.List()
+	assert.NilError(t, err)
+	assert.Equal(t, listItems[0], string("parent"))
+
+	listItems, err = seer.Get("parent").List()
+	assert.NilError(t, err)
+	assert.Equal(t, listItems[0], "p")
+}
+
+func TestListMultiSet(t *testing.T) {
+	seer, err := New(fixtureFS(true, "/"))
+	assert.NilError(t, err)
+
+	items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
+	for _, i := range items {
+		err = seer.Get("parent").Get(i).Commit()
+		assert.NilError(t, err)
 	}
 
-	t.Run("Basic empty", func(t *testing.T) {
-		funcs := []interface{ List() ([]string, error) }{
-			seer,
-			seer.Get("parent"),
-			seer.Get("parent").Get("p").Document(),
-			seer.Get("a").Get("b").Get("C").Document().Get("a").Get("orange"),
-		}
-		for _, f := range funcs {
-			listItems, _ := f.List()
-			if len(listItems) != 0 {
-				t.Error("list should be empty")
-				break
-			}
-		}
-	})
-	t.Run("Basic set and list", func(t *testing.T) {
-		seer.Get("parent").Get("p").Commit()
-		listItems, err := seer.List()
-		if err != nil {
-			t.Errorf("list failed with error: %s", err.Error())
-			return
-		}
-		if listItems[0] != "parent" {
-			t.Error("expected parent")
-			return
-		}
+	listItems, err := seer.Get("parent").List()
+	assert.NilError(t, err)
 
-		listItems, err = seer.Get("parent").List()
-		if err != nil {
-			t.Errorf("list failed with error: %s", err.Error())
-			return
-		}
-		if listItems[0] != "p" {
-			t.Error("expected p")
-			return
-		}
+	assertContains(t, listItems, items...)
+}
 
-	})
+func TestListDeepMultiSet(t *testing.T) {
+	seer, err := New(fixtureFS(true, "/"))
+	assert.NilError(t, err)
 
-	t.Run("Basic multi-set run", func(t *testing.T) {
-		listItems, err := seer.Get("parent").List()
-		if listItems[0] != "p" || err != nil {
-			t.Error("expected p")
-			return
-		}
+	items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
+	for _, i := range items {
+		assert.NilError(t, seer.Get("parent").Get("sad").Get("fruits").Get(i).Commit())
+	}
 
-		items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
-		for _, i := range items {
-			seer.Get("parent").Get(i).Commit()
-		}
-		listItems, err = seer.Get("parent").List()
-		if err != nil {
-			t.Errorf("list failed with error: %s", err.Error())
-		}
+	listItems, err := seer.Get("parent").Get("sad").Get("fruits").List()
+	assert.NilError(t, err)
 
-		for _, i := range items {
-			if inSlice(listItems, i) == false {
-				t.Errorf("%s not found in %s", i, listItems)
-			}
-		}
+	assertContains(t, listItems, items...)
+}
 
-		t.Run("Test proof", func(t *testing.T) {
-			items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
-			newItems := append(items, "nanacoco")
+func TestListDeepCommitDelete(t *testing.T) {
+	seer, err := New(fixtureFS(true, "/"))
+	assert.NilError(t, err)
 
-			var foundErr bool
-			for _, i := range newItems {
-				if inSlice(items, i) == false {
-					foundErr = true
-				}
-			}
-			if foundErr == false {
-				t.Error("Test doesn't work")
-			}
-		})
-	})
+	items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
+	toDelete := []string{items[1], items[2]}
+	expectedItems := append(items[:1], items[3:]...)
 
-	t.Run("Deep multi-set run", func(t *testing.T) {
-		items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
-		for _, i := range items {
-			seer.Get("parent").Get("sad").Get("fruits").Get(i).Commit()
-		}
-		listItems, err := seer.Get("parent").Get("sad").Get("fruits").List()
-		if err != nil {
-			t.Errorf("list failed with error: %s", err.Error())
-		}
+	query := seer.Get("parent").Get("sad").Get("fruits")
 
-		for _, i := range items {
-			if inSlice(listItems, i) == false {
-				t.Errorf("%s not found in %s", i, listItems)
-			}
-		}
-	})
+	for _, i := range items {
+		err = query.Fork().Get(i).Commit()
+		assert.NilError(t, err)
+	}
 
-	t.Run("Deep multi-set run with commit and delete", func(t *testing.T) {
-		query := seer.Get("parent").Get("sad").Get("fruits")
+	for _, i := range toDelete {
+		err = query.Fork().Get(i).Delete().Commit()
+		assert.NilError(t, err)
+	}
 
-		items := []string{"oranges", "bananas", "pears", "pineapples", "coconuts"}
-		for _, i := range items {
-			query.Fork().Get(i).Commit()
-		}
-		toDelete := []string{"bananas", "pears"}
-		for _, i := range toDelete {
-			query.Fork().Get(i).Delete().Commit()
-		}
+	listItems, err := query.List()
+	assert.NilError(t, err)
 
-		expectedItems := []string{"oranges", "pineapples", "coconuts"}
-		listItems, _ := query.List()
-		for _, i := range expectedItems {
-			if inSlice(listItems, i) == false {
-				t.Errorf("%s not found in %s", i, listItems)
-			}
-		}
+	assertContains(t, listItems, expectedItems...)
+	assertNotContains(t, listItems, toDelete...)
 
-		for _, i := range toDelete {
-			if inSlice(listItems, i) == true {
-				t.Errorf("%s found in %s", i, listItems)
-			}
-		}
-	})
+}
 
-	t.Run("listing on a document", func(t *testing.T) {
-		documentName := "some-doc"
-		listItem1 := "pears"
-		listItem2 := "bananas"
+func TestListOnDocument(t *testing.T) {
+	seer, err := New(fixtureFS(true, "/"))
+	assert.NilError(t, err)
 
-		err = seer.Get(documentName).Document().Get(listItem1).Set(10).Commit()
-		if err != nil {
-			t.Error(err)
-			return
-		}
+	documentName := "some-doc"
+	item1 := "pears"
+	item2 := "bananas"
 
-		err = seer.Get(documentName).Document().Get(listItem2).Set(20).Commit()
-		if err != nil {
-			t.Error(err)
-			return
-		}
+	err = seer.Get(documentName).Document().Get(item1).Set(10).Commit()
+	assert.NilError(t, err)
 
-		val, err := seer.Get(documentName).List()
-		if err != nil {
-			t.Error(err)
-			return
-		}
+	err = seer.Get(documentName).Document().Get(item2).Set(20).Commit()
+	assert.NilError(t, err)
 
-		if slices.Contains(val, listItem1) == false {
-			t.Errorf("%s not found in `%v`", listItem1, val)
-			return
-		}
-		if slices.Contains(val, listItem2) == false {
-			t.Errorf("%s not found in `%v`", listItem2, val)
-			return
-		}
-	})
+	list, err := seer.Get(documentName).List()
+	assert.NilError(t, err)
+
+	assertContains(t, list, item1, item2)
+}
+
+func assertContains(t *testing.T, val []string, items ...string) {
+	for _, item := range items {
+		assert.Assert(t, slices.Contains(val, item), "%s not in %v", item, val)
+	}
+}
+
+func assertNotContains(t *testing.T, val []string, items ...string) {
+	for _, item := range items {
+		assert.Assert(t, slices.Contains(val, item) == false, "%s in %v", item, val)
+	}
 }

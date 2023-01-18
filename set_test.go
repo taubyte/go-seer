@@ -2,6 +2,8 @@ package seer
 
 import (
 	"testing"
+
+	"golang.org/x/exp/slices"
 )
 
 func TestSet(t *testing.T) {
@@ -46,7 +48,7 @@ func TestSet(t *testing.T) {
 		var val []string
 		seer.Get(path).Get(inner).Value(&val)
 		for _, v := range val {
-			if inSlice(items, v) == false {
+			if slices.Contains(items, v) == false {
 				t.Errorf("FAILMSG: %s not in %s", v, items)
 				return
 			}

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
+	"gotest.tools/v3/assert"
 )
 
 func _setDelete(seer *Seer, path string, inner string, value interface{}) error {
@@ -29,9 +31,8 @@ func _setDeleteStringItems(seer *Seer, path string, inner string, items []string
 	val := make([]string, 0)
 	seer.Get(path).Get(inner).Value(&val)
 	for _, v := range val {
-		if inSlice(items, v) == false {
+		if slices.Contains(items, v) == false {
 			return fmt.Errorf("FAILMSG: %s not in %s", v, items)
-
 		}
 	}
 	return nil
@@ -43,6 +44,7 @@ func _setDeleteMap(seer *Seer, path string, inner string, items map[string]strin
 	if err != nil {
 		return fmt.Errorf("FAILMSG: for `%s/%s` failed with %w should be empty", path, inner, err)
 	}
+
 	val := make(map[string]string)
 	seer.Get(path).Get(inner).Value(&val)
 	if len(val) != 0 {
@@ -78,141 +80,87 @@ func TestDelete(t *testing.T) {
 
 	t.Run("set int and get 1/2", func(t *testing.T) {
 		err := _setDelete(seer, "parent1", "1", 1)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent2", "1", 15)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set int and get 2/2", func(t *testing.T) {
 		err := _setDelete(seer, "parent3", "1", 432145)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent4", "1", 412655511)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent5", "1", 97653436)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set float and get", func(t *testing.T) {
 		err := _setDelete(seer, "parent1", "2", 1.1412948)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent2", "2", 41241.4124912)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent3", "2", 59891503.85629321)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent4", "2", 18956896.75479195312)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set map and get 1/3", func(t *testing.T) {
 		err := _setDeleteMap(seer, "parent1", "6", map[string]string{"hello": "world", "apple": "orange"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set map and get 2/3", func(t *testing.T) {
 		err := _setDeleteMap(seer, "parent2", "7", map[string]string{"dasddwa": "wordwadld", "dwadwaqqew": "dasdasdwaw"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set map and get 3/3", func(t *testing.T) {
 		err := _setDeleteMap(seer, "parent3", "9", map[string]string{"t": "wordwadld", "r": "dasdasdwaw"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set bool and get", func(t *testing.T) {
 		err := _setDelete(seer, "parent1", "3", true)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent2", "3", false)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set string and get", func(t *testing.T) {
 		err := _setDelete(seer, "parent1", "4", "somestring")
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent2", "4", "some\ttab string odd")
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent3", "4", "some \n string with newline")
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDelete(seer, "parent4", "4", "some 84921 numbered \t odd \n string")
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set array and get", func(t *testing.T) {
 		err := _setDeleteStringItems(seer, "parent1", "5", []string{"hello", "apple", "orange"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDeleteStringItems(seer, "parent2", "5", []string{"hello", "apple", "coconuts", "ora4214421nge"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 
 	t.Run("set map and get", func(t *testing.T) {
 		err := _setDeleteMap(seer, "parent1", "6", map[string]string{"hello": "world", "apple": "orange"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
+
 		err = _setDeleteMap(seer, "parent2", "7", map[string]string{"dasddwa": "wordwadld", "dwadwaqqew": "dasdasdwaw"})
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NilError(t, err)
 	})
 }
