@@ -255,6 +255,11 @@ func (n *Query) List() ([]string, error) {
 		return nil, fmt.Errorf("listing keys failed with %s", err)
 	}
 
+	// Empty value should be an empty list
+	if val == nil {
+		return nil, nil
+	}
+
 	switch val.(type) {
 	case []string:
 		return val.([]string), nil
@@ -263,7 +268,7 @@ func (n *Query) List() ([]string, error) {
 	case map[interface{}]interface{}:
 		return maps.Keys(maps.SafeInterfaceToStringKeys(val.(map[interface{}]interface{}))), nil
 	default:
-		return nil, fmt.Errorf("listing keys failed with %T is not a map or a slice", val)
+		return nil, fmt.Errorf("listing keys failed with %v type(%T) is not a map or a slice", val, val)
 	}
 }
 
