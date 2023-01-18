@@ -2,7 +2,6 @@ package seer
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/afero"
 )
@@ -29,10 +28,4 @@ func fixtureFS(virtual bool, dir ...string) Option {
 		s.fs = newFs
 		return nil
 	}
-}
-
-func inSlice(items []string, i string) bool {
-	toCheck := strings.Join(items, ", ")
-	return strings.Contains(toCheck, i)
-
 }
