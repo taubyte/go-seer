@@ -106,9 +106,10 @@ func TestSet(t *testing.T) {
 	}
 	t.Parallel()
 	for name, toRun := range toRun2D {
+		_toRun := toRun
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			for _, f := range toRun {
+			for _, f := range _toRun {
 				t.Run("x", f)
 			}
 		})
