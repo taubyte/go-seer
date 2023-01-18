@@ -108,7 +108,7 @@ func TestListOnDocument(t *testing.T) {
 
 	documentName := "some-doc"
 	item1 := "pears"
-	item2 := "bananas"
+	item2 := "oranges"
 
 	err = seer.Get(documentName).Document().Get(item1).Set(10).Commit()
 	assert.NilError(t, err)

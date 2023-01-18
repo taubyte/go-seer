@@ -175,7 +175,7 @@ func (n *Query) Commit() error {
 	for _, op := range n.ops {
 		path, doc, err = op.handler(op, n, path, doc)
 		if err != nil {
-			return fmt.Errorf("Commiting failed with %s", err.Error())
+			return fmt.Errorf("committing failed with %s", err.Error())
 		}
 	}
 
