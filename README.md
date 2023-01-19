@@ -1,7 +1,10 @@
 # taubyte/go-seer
 
-[![GoDoc](https://godoc.org/github.com/taubyte/go-seer?status.svg)](https://pkg.go.dev/github.com/taubyte/go-seer)
+[![Release](https://img.shields.io/github/release/taubyte/go-seer.svg)](https://github.com/taubyte/go-seer/releases)
+[![License](https://img.shields.io/github/license/taubyte/go-seer)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/taubyte/go-seer)](https://goreportcard.com/report/taubyte/go-seer)
+[![GoDoc](https://godoc.org/github.com/taubyte/go-seer?status.svg)](https://pkg.go.dev/github.com/taubyte/go-seer)
+[![Discord](https://img.shields.io/discord/973677117722202152?color=%235865f2&label=discord)](https://tau.link/discord)
 
 Go-seer is a tool to parse and edit YAML files in a directory as one structure.
 
@@ -71,15 +74,6 @@ Will print
 ```
 Battery of 100Kwh
 ```
-
-## License
-The yaml package is licensed under the GPL v3 licenses.
-
-See [LICENSE](LICENSE) for the full license text.
-
-
-## Help
-Find us on our [Discord](https://discord.gg/eKfazxFDf9)
 
 
 ## Maintainers
