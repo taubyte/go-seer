@@ -11,12 +11,12 @@ type Option func(s *Seer) error
 func SystemFS(path string) Option {
 	return func(s *Seer) error {
 		if s.fs != nil {
-			return fmt.Errorf("Can't combile *Fs() Options")
+			return fmt.Errorf("can't combile *Fs() Options")
 		}
 		fs := afero.NewBasePathFs(afero.OsFs{}, path)
 		_, err := fs.Stat("/")
 		if err != nil {
-			return fmt.Errorf("Opening repository failed with %s", err.Error())
+			return fmt.Errorf("opening repository failed with %w", err)
 		}
 		s.fs = fs
 		return nil
@@ -26,12 +26,12 @@ func SystemFS(path string) Option {
 func VirtualFS(fs afero.Fs, path string) Option {
 	return func(s *Seer) error {
 		if s.fs != nil {
-			return fmt.Errorf("Can't combine *Fs() Options")
+			return fmt.Errorf("can't combine *Fs() Options")
 		}
 		fs = afero.NewBasePathFs(fs, path)
 		_, err := fs.Stat("/")
 		if err != nil {
-			return fmt.Errorf("Opening repository failed with %s", err.Error())
+			return fmt.Errorf("opening repository failed with %w", err)
 		}
 		s.fs = fs
 		return nil

@@ -74,9 +74,3 @@ Will print
 ```
 Battery of 100Kwh
 ```
-
-
-## Maintainers
- - Samy Fodil @samyfodil
- - Aron Jalbuena @arontaubyte
- - Sam Stoltenberg @skelouse
