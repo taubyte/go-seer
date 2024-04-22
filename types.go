@@ -18,7 +18,7 @@ type Seer struct {
 const (
 	opTypeGet            = 1
 	opTypeCreateDocument = 2
-	opTypeCreateFolder   = 3
+	opTypeCreateFolder   = 3 // TODO: Either implement or delete
 	opTypeSet            = 16
 	opTypeGetOrCreate    = 42
 )

@@ -1,6 +1,7 @@
 package seer
 
 import (
+	"errors"
 	"fmt"
 
 	"gopkg.in/yaml.v3"
@@ -24,7 +25,7 @@ func New(options ...Option) (*Seer, error) {
 	}
 
 	if s.fs == nil {
-		return nil, fmt.Errorf("Can't create a Seer instance without a file system!")
+		return nil, errors.New("can't create a Seer instance without a file system")
 	}
 
 	return s, nil

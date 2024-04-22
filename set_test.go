@@ -40,7 +40,6 @@ func TestSet(t *testing.T) {
 			t.Errorf("FAILMSG: %s not in %s", val, value)
 			return
 		}
-		return
 	}
 
 	_setStringItems := func(t *testing.T, path string, inner string, items []string) {
