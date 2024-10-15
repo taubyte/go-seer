@@ -3,6 +3,7 @@ package seer
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -273,7 +274,7 @@ func opCreateDocument(this op, query *Query, _path []string, value *yamlNode) ([
 		}
 	} else { // we need to create
 		if query.write {
-			f, err := query.seer.fs.Create(path)
+			f, err := query.seer.fs.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0640)
 			if err != nil {
 				return _path, nil, fmt.Errorf("creating yaml file %s failed with %w", path, err)
 			}
